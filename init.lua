@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
@@ -234,6 +234,60 @@ end
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
+-- CUSTOM COMMANDS HERE
+local function jdog_map(mode, lhs, rhs, opts)
+  opts = opts or {}
+  if opts.unique == nil then
+    opts.unique = true
+  end
+  vim.keymap.set(mode, lhs, rhs, opts)
+end
+
+-- Ensure custom maps apply after plugins load (avoids later overrides)
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'VeryLazy',
+  callback = function()
+    jdog_map('n', '<leader>so', function()
+      require('telescope.builtin').lsp_document_symbols {
+        symbols = {
+          'function',
+          'method',
+          'class',
+          'struct',
+          'interface',
+          'enum',
+          'module',
+        },
+      }
+    end, { desc = '[S]earch for [O]bjects in the file' })
+
+    -- Toggle Neo-tree in floating mode (file navigator)
+    jdog_map('n', '<leader>fn', '<cmd>Neotree toggle float<cr>', { desc = '[F]ile [N]avigator (Neo-tree float)' })
+
+    -- Buffers picker (Telescope)
+    jdog_map('n', '<leader>sb', function()
+      require('telescope.builtin').buffers()
+    end, { desc = '[S]earch [B]uffers' })
+  end,
+})
+
+-- Make pair matching highlights more obvious
+vim.api.nvim_create_autocmd('ColorScheme', {
+  callback = function()
+    vim.api.nvim_set_hl(0, 'MatchParen', { fg = '#ffffff', bg = '#ffff00', bold = true })
+  end,
+})
+
+-- Markdown: show a 120-column guide
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'markdown',
+  callback = function()
+    vim.opt_local.colorcolumn = '120'
+  end,
+})
+
+-- CUSTOM COMMANDS HERE
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
@@ -274,6 +328,9 @@ require('lazy').setup({
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
+      signcolumn = true,
+      linehl = true,
+      numhl = true,
       signs = {
         add = { text = '+' },
         change = { text = '~' },
@@ -407,11 +464,12 @@ require('lazy').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          --   mappings = {
+          --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+          --   },
+          initial_mode = 'normal',
+        },
         -- pickers = {}
         extensions = {
           ['ui-select'] = {
@@ -673,15 +731,15 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
+        pyright = {},
+        rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
+        ts_ls = {},
         --
 
         lua_ls = {
@@ -769,7 +827,7 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { 'isort', 'black' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
@@ -835,7 +893,7 @@ require('lazy').setup({
         -- <c-k>: Toggle signature help
         --
         -- See :h blink-cmp-config-keymap for defining your own keymap
-        preset = 'default',
+        preset = 'enter',
 
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
         --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
@@ -934,12 +992,16 @@ require('lazy').setup({
         return '%2l:%-2v'
       end
 
+      -- Smooth animations for scrolling, cursor movement, etc.
+      require('mini.animate').setup()
+
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    branch = 'master',
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
@@ -984,7 +1046,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
