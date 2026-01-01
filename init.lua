@@ -121,6 +121,12 @@ end)
 -- Enable break indent
 vim.o.breakindent = true
 
+-- Tab/indent defaults
+vim.o.tabstop = 4
+vim.o.shiftwidth = 4
+vim.o.softtabstop = 4
+vim.o.expandtab = true
+
 -- Save undo history
 vim.o.undofile = true
 
@@ -262,21 +268,24 @@ vim.api.nvim_create_autocmd('User', {
     end, { desc = '[S]earch for [O]bjects in the file' })
 
     -- Toggle Neo-tree in floating mode (file navigator)
-    jdog_map('n', '<leader>fn', '<cmd>Neotree toggle float<cr>', { desc = '[F]ile [N]avigator (Neo-tree float)' })
+    jdog_map('n', '<leader>fn', '<cmd>Neotree toggle float reveal<cr>', { desc = '[F]ile [N]avigator (Neo-tree float)' })
 
     -- Buffers picker (Telescope)
     jdog_map('n', '<leader>sb', function()
       require('telescope.builtin').buffers()
     end, { desc = '[S]earch [B]uffers' })
+
+    -- Diagnostics float
+    jdog_map('n', '<leader>se', vim.diagnostic.open_float, { desc = '[S]how diagnostics [E]ntry' })
   end,
 })
 
 -- Make pair matching highlights more obvious
-vim.api.nvim_create_autocmd('ColorScheme', {
-  callback = function()
-    vim.api.nvim_set_hl(0, 'MatchParen', { fg = '#ffffff', bg = '#ffff00', bold = true })
-  end,
-})
+-- vim.api.nvim_create_autocmd('ColorScheme', {
+--   callback = function()
+--     vim.api.nvim_set_hl(0, 'MatchParen', { fg = '#ffffff', bg = '#ffff00', bold = true })
+--   end,
+-- })
 
 -- Markdown: show a 120-column guide
 vim.api.nvim_create_autocmd('FileType', {
@@ -733,6 +742,21 @@ require('lazy').setup({
         -- gopls = {},
         pyright = {},
         rust_analyzer = {},
+        jdtls = {
+          settings = {
+            java = {
+              import = {
+                gradle = {
+                  enabled = true,
+                  wrapper = { enabled = true },
+                },
+              },
+              configuration = {
+                updateBuildConfiguration = 'automatic',
+              },
+            },
+          },
+        },
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:

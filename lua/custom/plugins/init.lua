@@ -64,4 +64,11 @@ return {
       vim.keymap.set({ 'n', 'x', 'o' }, 's', flash.jump, { desc = 'Flash jump' })
     end,
   },
+  -- Icon set used by many plugins
+  { 'nvim-tree/nvim-web-devicons', lazy = true },
+  {
+    'windwp/nvim-autopairs',
+    event = 'InsertEnter',
+    opts = {},
+  },
 }
