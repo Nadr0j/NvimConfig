@@ -57,7 +57,9 @@ return {
   {
     'folke/flash.nvim',
     event = 'VeryLazy',
-    opts = {},
+    opts = {
+      label = { uppercase = false },
+    },
     config = function(_, opts)
       local flash = require 'flash'
       flash.setup(opts)
@@ -70,5 +72,34 @@ return {
     'windwp/nvim-autopairs',
     event = 'InsertEnter',
     opts = {},
+  },
+  {
+    'nvim-treesitter/nvim-treesitter-context',
+    event = { 'BufReadPost', 'BufNewFile' },
+    opts = {},
+  },
+  {
+    'ap/vim-buftabline',
+    event = 'VeryLazy',
+  },
+  -- {
+  --   'scottmckendry/cyberdream.nvim',
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function()
+  --     require('cyberdream').setup {
+  --       transparent = false,
+  --     }
+  --     vim.cmd.colorscheme 'cyberdream'
+  --   end,
+  -- },
+  {
+    dir = '/Users/jordanfields/AgentProjects/kiro.nvim/kiro.nvim',
+    lazy = false,
+    opts = {
+      keymaps = { toggle = '<leader>kk' },
+      ensure_greeting_disabled = true,
+      default_view = 'left',
+    },
   },
 }

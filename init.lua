@@ -277,6 +277,10 @@ vim.api.nvim_create_autocmd('User', {
 
     -- Diagnostics float
     jdog_map('n', '<leader>se', vim.diagnostic.open_float, { desc = '[S]how diagnostics [E]ntry' })
+
+    -- Buffer navigation
+    jdog_map('n', '<C-n>', '<cmd>bnext<cr>', { desc = 'Next buffer' })
+    jdog_map('n', '<C-b>', '<cmd>bprevious<cr>', { desc = 'Before buffer' })
   end,
 })
 
